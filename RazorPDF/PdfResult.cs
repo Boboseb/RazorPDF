@@ -12,30 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 
 namespace RazorPDF
 {
     public class PdfResult : ViewResult
     {
-        //Constructors
-        public PdfResult(object model, string name)
-        {
-            ViewData = new ViewDataDictionary(model);
-            ViewName = name;
-        }
-        public PdfResult() : this(new ViewDataDictionary(), "Pdf")
-        {
-        }
-        public PdfResult(object model) : this(model, "Pdf")
-        {
-        }
-
         //Override FindView to load PdfView
         protected override ViewEngineResult FindView(ControllerContext context)
         {
@@ -45,6 +27,14 @@ namespace RazorPDF
 
             var pdfView = new PdfView(result);
             return new ViewEngineResult(pdfView, pdfView);
+        }
+
+        public override void ExecuteResult(ControllerContext context)
+        {
+            base.ExecuteResult(context);
+            // this is as close as we can get to being "success" before writing output
+            // so set the content type now
+            context.HttpContext.Response.ContentType = "application/pdf";
         }
     }
 }
